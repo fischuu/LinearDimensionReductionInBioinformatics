@@ -6,7 +6,9 @@ Fischer, D., Nordhausen, K., Oja, H.: On Linear Dimension Reduction Based on Dia
 The folder structure is as follows:
 
 `Data/` : Contains all the data
+
 `Code/` : Contains all R scripts
+
 `Manuscript/` : Contains the Latex code to generate the manuscript pdf
 
 To reproduce the results and figures, clone into this repository
