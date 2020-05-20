@@ -32,7 +32,7 @@
   PrCa.pca.var <- PrCa.pca$sdev^2
   PrCa.pca.cumsum <- cumsum(PrCa.pca.var)/sum(PrCa.pca.var)
   PrCa.pca.80 <- sum(PrCa.pca.cumsum<0.80)+1
-  PrCa.pca.99 <- sum(PrCa.pca.cumsum<0.99)+1
+  PrCa.pca.99 <- sum(PrCa.pca.cumsum<0.9999)+1
   
   # Just as a reminder, to get the origial data, one need to multiply the rotated data (=x here)
   # with the transposed rotation matrix (= the matrix that contains the eigenvectors). As prcomp
@@ -46,7 +46,8 @@
 # Table of first 10 squared singular values of SVD:
   tableOut <- data.frame(value=PrCa.pca.var,
                          cumsum=PrCa.pca.cumsum)
-  
+
+# Data for Table 1  
   tableOut[1:10,]
   
 # Figure of explained variance
@@ -58,7 +59,7 @@
     pairs(PrCa.pca.rot[,1:4])
   if(exportFigures)  dev.off()
   
-  # Run the ICS 
+# Run the ICS 
 ###############################################################################
   
 # Ths ICS-step
@@ -72,7 +73,6 @@
 # Robust ICS with different scatter functionals
   FOBI.80.robust <- ics(PrCa.pca.rot[,1:PrCa.pca.80],duembgen.shape, symm.huber)
 
-    
 # Who is deviating in the first component?
   which(ics.components(FOBI.80)[,1]>2)
   
@@ -86,12 +86,36 @@
     plot(FOBI.80.robust, col=as.numeric(PrCa.pheno$slideNumber>23)+1, index=1:min(PrCa.pca.80,10), 
          main="Based on 80% Variancefrom PCA - Duembgen/Symm Huber")
   if(exportFigures)dev.off()
+
+# Data for table 2:
+  apply(cbind(FOBI.80@gKurt, FOBI.80.robust@gKurt),2,round,4)
+
+# Data for table 3  
+    round(c(FOBIasymp(PrCa.pca.rot[,1:PrCa.pca.80], k=0, model="ICA")$p.value,
+          FOBIasymp(PrCa.pca.rot[,1:PrCa.pca.80], k=1, model="ICA")$p.value,
+          FOBIasymp(PrCa.pca.rot[,1:PrCa.pca.80], k=2, model="ICA")$p.value),4)
+
+  
+  
+  # SIR for cancer class  
+################################################################################    
+set.seed(1234)
+# Getting the phenotype class
+  y <- PrCa.pheno[,7]  
     
-# Automatic detection of components with ICtest. The k=4 comes from FOBIasym, with the smallest k that does not reject the test.
-  FOBIasymp(PrCa.pca.rot[,1:10], k=3)
-  if(exportFigures) png(file=file.path("Results","PrCa-ICS-FOBIasymp-Scatterplot-5.png"), width=1000, height=1000)
-    plot(FOBIasymp(PrCa.pca.rot[,1:5], k=2), col=as.numeric(PrCa.pheno$slideNumber>23)+1, which="k", main="Based on 10 components from PCA, dim=first non-sig.")
-  if(exportFigures) dev.off()
-  if(exportFigures)png(file=file.path("Results","PrCa-ICS-FOBIasymp-Scatterplot-10.png"), width=1000, height=1000)
-    plot(FOBIasymp(PrCa.pca.rot[,1:10], k=4), col=as.numeric(PrCa.pheno$slideNumber>23)+1, which="k", main="Based on 10 components from PCA, dim=first non-sig.")
-  if(exportFigures)dev.off()
+# Performing the SIR (80 refers to 4 components and 99 to 98, depending on the variance explained by these components)
+  RES.SIR.10 <- SIR(PrCa.pca.rot[,1:10], y, natH=TRUE)
+  RES.SIR.80 <- SIR(PrCa.pca.rot[,1:PrCa.pca.80], y, natH=TRUE)
+  RES.SIR.99 <- SIR(PrCa.pca.rot[,1:PrCa.pca.99], y, natH=TRUE)
+
+# Plotting the results
+    if(exportFigures)  png(file=file.path("Results","PrCa-SIR-Scatterplot-99.png"), width=1000, height=1000)
+      pairs(cbind(y, RES.SIR.99$S[,1:min(5,PrCa.pca.99)]), col=as.numeric(PrCa.pheno[,7])+1)
+    if(exportFigures)dev.off()
+
+    if(exportFigures)  png(file=file.path("Results","PrCa-SIR-Scatterplot-80.png"), width=1000, height=1000)
+      pairs(cbind(y, RES.SIR.80$S[,1:min(5,PrCa.pca.80)]), col=as.numeric(PrCa.pheno[,7])+1)
+    if(exportFigures)dev.off()
+      
+# Data for table 4
+      
