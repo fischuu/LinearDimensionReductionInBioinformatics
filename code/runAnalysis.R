@@ -90,7 +90,12 @@
 # Data for table 2:
   apply(cbind(FOBI.80@gKurt, FOBI.80.robust@gKurt),2,round,4)
 
-# Data for table 3  
+# Data for table 3
+  set.seed(1)
+  round(c(FOBIboot(PrCa.pca.rot[,1:PrCa.pca.80], k=0, n.boot=500)$p.value,
+          FOBIboot(PrCa.pca.rot[,1:PrCa.pca.80], k=1, n.boot=500)$p.value,
+          FOBIboot(PrCa.pca.rot[,1:PrCa.pca.80], k=2, n.boot=500)$p.value),4)
+  
     round(c(FOBIasymp(PrCa.pca.rot[,1:PrCa.pca.80], k=0, model="ICA")$p.value,
           FOBIasymp(PrCa.pca.rot[,1:PrCa.pca.80], k=1, model="ICA")$p.value,
           FOBIasymp(PrCa.pca.rot[,1:PrCa.pca.80], k=2, model="ICA")$p.value),4)
@@ -104,9 +109,9 @@ set.seed(1234)
   y <- PrCa.pheno[,7]  
     
 # Performing the SIR (80 refers to 4 components and 99 to 98, depending on the variance explained by these components)
-  RES.SIR.10 <- SIR(PrCa.pca.rot[,1:10], y, natH=TRUE)
-  RES.SIR.80 <- SIR(PrCa.pca.rot[,1:PrCa.pca.80], y, natH=TRUE)
-  RES.SIR.99 <- SIR(PrCa.pca.rot[,1:PrCa.pca.99], y, natH=TRUE)
+  RES.SIR.10 <- SIR.natH(PrCa.pca.rot[,1:10], y, natH=TRUE)
+  RES.SIR.80 <- SIR.natH(PrCa.pca.rot[,1:PrCa.pca.80], y, natH=TRUE)
+  RES.SIR.99 <- SIR.natH(PrCa.pca.rot[,1:PrCa.pca.99], y, natH=TRUE)
 
 # Plotting the results
     if(exportFigures)  png(file=file.path("Results","PrCa-SIR-Scatterplot-99.png"), width=1000, height=1000)
@@ -118,4 +123,11 @@ set.seed(1234)
     if(exportFigures)dev.off()
       
 # Data for table 4
-      
+  set.seed(1)
+  round(SIRboot.natH(PrCa.pca.rot[,1:PrCa.pca.99], y=y, k=0, h=2, natH=TRUE)$p.value, 4)
+  round(SIRboot.natH(PrCa.pca.rot[,1:PrCa.pca.99], y=y, k=1, h=2, natH=TRUE)$p.value, 4)
+  
+  round(SIRasymp.natH(PrCa.pca.rot[,1:PrCa.pca.99], y=y, k=0, h=2, natH=TRUE)$p.value,4)
+  round(SIRasymp.natH(PrCa.pca.rot[,1:PrCa.pca.99], y=y, k=1, h=2, natH=TRUE)$p.value,4)
+  
+  
