@@ -88,19 +88,17 @@
   if(exportFigures)dev.off()
 
 # Data for table 2:
-  apply(cbind(FOBI.80@gKurt, FOBI.80.robust@gKurt),2,round,4)
+  apply(cbind(FOBIasymp(PrCa.pca.rot[,1:PrCa.pca.80], k=0)$D, FOBI.80.robust@gKurt),2,round,4)
 
-# Data for table 3
+  # Data for table 3
   set.seed(1)
+  round(c(FOBIasymp(PrCa.pca.rot[,1:PrCa.pca.80], k=0, model="ICA")$p.value,
+          FOBIasymp(PrCa.pca.rot[,1:PrCa.pca.80], k=1, model="ICA")$p.value,
+          FOBIasymp(PrCa.pca.rot[,1:PrCa.pca.80], k=2, model="ICA")$p.value),4)
+  
   round(c(FOBIboot(PrCa.pca.rot[,1:PrCa.pca.80], k=0, n.boot=500)$p.value,
           FOBIboot(PrCa.pca.rot[,1:PrCa.pca.80], k=1, n.boot=500)$p.value,
           FOBIboot(PrCa.pca.rot[,1:PrCa.pca.80], k=2, n.boot=500)$p.value),4)
-  
-    round(c(FOBIasymp(PrCa.pca.rot[,1:PrCa.pca.80], k=0, model="ICA")$p.value,
-          FOBIasymp(PrCa.pca.rot[,1:PrCa.pca.80], k=1, model="ICA")$p.value,
-          FOBIasymp(PrCa.pca.rot[,1:PrCa.pca.80], k=2, model="ICA")$p.value),4)
-
-  
   
   # SIR for cancer class  
 ################################################################################    
